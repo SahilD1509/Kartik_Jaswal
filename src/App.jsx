@@ -6,7 +6,6 @@ function App() {
   const [activeSection, setActiveSection] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const canvasRef = useRef(null);
   const particlesRef = useRef(null);
 
   // Handle scroll events
@@ -35,68 +34,6 @@ function App() {
   useEffect(() => {
     setTimeout(() => setIsLoading(false), 2000);
   }, []);
-
-  // 3D Canvas Animation
-  useEffect(() => {
-    if (isLoading) return;
-
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-
-    class Particle3D {
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.z = Math.random() * 1000;
-        this.vx = Math.random() * 2 - 1;
-        this.vy = Math.random() * 2 - 1;
-        this.vz = Math.random() * 2 - 1;
-        this.size = Math.random() * 3 + 1;
-      }
-
-      update() {
-        this.x += this.vx;
-        this.y += this.vy;
-        this.z += this.vz;
-
-        if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
-        if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
-        if (this.z < 0 || this.z > 1000) this.vz *= -1;
-      }
-
-      draw() {
-        const scale = 1000 / (1000 + this.z);
-        const x2d = (this.x - canvas.width / 2) * scale + canvas.width / 2;
-        const y2d = (this.y - canvas.height / 2) * scale + canvas.height / 2;
-        const size = this.size * scale;
-
-        ctx.beginPath();
-        ctx.arc(x2d, y2d, size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(59, 130, 246, ${1 - this.z / 1000})`;
-        ctx.fill();
-      }
-    }
-
-    const particles = Array.from({ length: 100 }, () => new Particle3D());
-
-    let animationFrame;
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach(particle => {
-        particle.update();
-        particle.draw();
-      });
-      animationFrame = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => cancelAnimationFrame(animationFrame);
-  }, [isLoading]);
 
   // Smooth scroll to section
   const scrollToSection = (sectionId) => {
@@ -260,7 +197,6 @@ function App() {
                   <div className="profile-ring"></div>
                   <div className="profile-ring-2"></div>
                 </div>
-                <canvas ref={canvasRef} className="canvas-3d"></canvas>
               </div>
             </div>
           </div>
